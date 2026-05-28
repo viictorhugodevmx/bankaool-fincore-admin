@@ -1,7 +1,43 @@
 <section class="login-page">
-  <div class="login-page__card">
+  <form class="login-page__card" (ngSubmit)="submitLogin()">
     <span class="login-page__eyebrow">Bankaool FinCore 360</span>
+
     <h1>Operational Admin</h1>
-    <p>Login screen placeholder. Real auth comes in the next step.</p>
-  </div>
+
+    <p>
+      Access the fintech operations console using your admin or operator account.
+    </p>
+
+    <label>
+      Email
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="admin@bankaool.test"
+        required
+      />
+    </label>
+
+    <label>
+      Password
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Password123"
+        required
+      />
+    </label>
+
+    @if (errorMessage()) {
+      <div class="login-page__error">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <button type="submit" [disabled]="isLoading()">
+      {{ isLoading() ? 'Signing in...' : 'Sign in' }}
+    </button>
+  </form>
 </section>

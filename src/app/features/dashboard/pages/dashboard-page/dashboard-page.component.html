@@ -9,7 +9,13 @@
       </p>
     </div>
 
-    <a routerLink="/login">Go to login</a>
+    <div class="dashboard-page__actions">
+      @if (user(); as currentUser) {
+        <span>{{ currentUser.name }} · {{ currentUser.role }}</span>
+      }
+
+      <button type="button" (click)="logout()">Logout</button>
+    </div>
   </section>
 
   <section class="dashboard-page__grid">
