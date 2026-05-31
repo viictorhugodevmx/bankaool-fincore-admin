@@ -4,8 +4,8 @@
       <span>Bankaool FinCore 360</span>
       <h1>Fintech Operations Dashboard</h1>
       <p>
-        Admin shell placeholder. In the next steps this dashboard will consume
-        the backend summary endpoint.
+        Monitor customers, accounts, transfer risk and operational workload from
+        one internal admin console.
       </p>
     </div>
 
@@ -18,11 +18,82 @@
     </div>
   </section>
 
-  <section class="dashboard-page__grid">
-    <a routerLink="/customers">Customers</a>
-    <a routerLink="/accounts">Accounts</a>
-    <a routerLink="/transfers">Transfers</a>
-    <a routerLink="/operations">Operations</a>
-    <a routerLink="/audit">Audit Logs</a>
-  </section>
+  @if (isLoading()) {
+    <section class="dashboard-page__state">
+      <strong>Loading dashboard...</strong>
+      <p>Getting operational metrics from Bankaool FinCore API.</p>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="dashboard-page__state dashboard-page__state--error">
+      <strong>Dashboard unavailable</strong>
+      <p>{{ errorMessage() }}</p>
+      <button type="button" (click)="loadSummary()">Try again</button>
+    </section>
+  } @else {
+    @if (summary(); as data) {
+      <section class="dashboard-page__metrics">
+        <article class="metric-card metric-card--highlight">
+          <span>Total balance</span>
+          <strong>{{ formatMoney(data.accounts.totalBalance) }}</strong>
+          <small>{{ data.accounts.active }} active accounts</small>
+        </article>
+
+        <article class="metric-card">
+          <span>Customers</span>
+          <strong>{{ data.customers.total }}</strong>
+          <small>{{ data.customers.active }} active · {{ data.customers.pendingKyc }} pending KYC</small>
+        </article>
+
+        <article class="metric-card">
+          <span>Transfers today</span>
+          <strong>{{ data.transfers.today }}</strong>
+          <small>{{ data.transfers.completed }} completed total</small>
+        </article>
+
+        <article class="metric-card">
+          <span>Pending review</span>
+          <strong>{{ data.transfers.pendingReview }}</strong>
+          <small>Transfers waiting operations</small>
+        </article>
+
+        <article class="metric-card metric-card--risk">
+          <span>Risk alerts</span>
+          <strong>{{ data.risk.alerts }}</strong>
+          <small>{{ data.risk.highRiskCustomers }} high risk customers</small>
+        </article>
+      </section>
+
+      <section class="dashboard-page__grid">
+        <a routerLink="/customers">
+          <span>Customers / KYC</span>
+          <strong>{{ data.customers.blocked }}</strong>
+          <small>blocked customers</small>
+        </a>
+
+        <a routerLink="/accounts">
+          <span>Accounts</span>
+          <strong>{{ data.accounts.total }}</strong>
+          <small>{{ data.accounts.blocked }} blocked</small>
+        </a>
+
+        <a routerLink="/transfers">
+          <span>Transfers</span>
+          <strong>{{ data.transfers.total }}</strong>
+          <small>{{ data.transfers.rejected }} rejected</small>
+        </a>
+
+        <a routerLink="/operations">
+          <span>Operations</span>
+          <strong>{{ data.transfers.pendingReview }}</strong>
+          <small>pending review</small>
+        </a>
+
+        <a routerLink="/audit">
+          <span>Audit Logs</span>
+          <strong>View</strong>
+          <small>operational traceability</small>
+        </a>
+      </section>
+    }
+  }
 </main>
