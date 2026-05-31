@@ -1,4 +1,119 @@
-<main class="placeholder-page">
-  <h1>Customers / KYC</h1>
-  <p>Customer management page placeholder.</p>
+<main class="customers-page">
+  <section class="customers-page__header">
+    <div>
+      <a routerLink="/" class="customers-page__back">← Dashboard</a>
+      <span>Bankaool FinCore 360</span>
+      <h1>Customers / KYC</h1>
+      <p>
+        Review fintech customer profiles, KYC status and risk level from the
+        operations console.
+      </p>
+    </div>
+
+    <button type="button" (click)="loadCustomers()">Refresh</button>
+  </section>
+
+  @if (isLoading()) {
+    <section class="customers-page__state">
+      <strong>Loading customers...</strong>
+      <p>Getting KYC profiles from the API.</p>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="customers-page__state customers-page__state--error">
+      <strong>Customers unavailable</strong>
+      <p>{{ errorMessage() }}</p>
+      <button type="button" (click)="loadCustomers()">Try again</button>
+    </section>
+  } @else {
+    <section class="customers-page__table-card">
+      <div class="customers-page__table-head">
+        <strong>{{ customers().length }} customers</strong>
+        <small>Admin/operator protected view</small>
+      </div>
+
+      <div class="customers-page__table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Contact</th>
+              <th>Tax ID</th>
+              <th>Income</th>
+              <th>KYC</th>
+              <th>Risk</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (customer of customers(); track customer.id) {
+              <tr>
+                <td>
+                  <strong>{{ customer.fullName }}</strong>
+                  <small>{{ customer.occupation }}</small>
+                </td>
+
+                <td>
+                  <strong>{{ customer.email }}</strong>
+                  <small>{{ customer.phone }}</small>
+                </td>
+
+                <td>{{ customer.taxId }}</td>
+
+                <td>{{ formatMoney(customer.monthlyIncome) }}</td>
+
+                <td>
+                  <span class="badge" [class]="'badge badge--' + customer.kycStatus">
+                    {{ formatStatus(customer.kycStatus) }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="risk" [class]="'risk risk--' + customer.riskLevel">
+                    {{ customer.riskLevel }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="customers-page__actions">
+                    <button
+                      type="button"
+                      (click)="updateStatus(customer, 'active')"
+                      [disabled]="updatingCustomerId() === customer.id"
+                    >
+                      Active
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="updateStatus(customer, 'blocked')"
+                      [disabled]="updatingCustomerId() === customer.id"
+                    >
+                      Block
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="updateStatus(customer, 'rejected')"
+                      [disabled]="updatingCustomerId() === customer.id"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7">
+                  <div class="customers-page__empty">
+                    No customers found.
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
 </main>
