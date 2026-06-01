@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
-import { AuthService } from '../../../../core/services/auth.service';
 import { DashboardService } from '../../../../core/services/dashboard.service';
 import { DashboardSummary } from '../../../../core/models/dashboard.model';
 
@@ -13,11 +12,7 @@ import { DashboardSummary } from '../../../../core/models/dashboard.model';
   styleUrl: './dashboard-page.component.scss',
 })
 export class DashboardPageComponent {
-  private readonly authService = inject(AuthService);
   private readonly dashboardService = inject(DashboardService);
-  private readonly router = inject(Router);
-
-  user = this.authService.user;
 
   summary = signal<DashboardSummary | null>(null);
   isLoading = signal(true);
@@ -51,10 +46,5 @@ export class DashboardPageComponent {
       currency: 'MXN',
       maximumFractionDigits: 0,
     }).format(value);
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigateByUrl('/login');
   }
 }

@@ -1,5 +1,5 @@
 .dashboard-page {
-  min-height: 100vh;
+  min-height: 100%;
   padding: 28px;
   background:
     radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 30%),
@@ -239,5 +239,15 @@
     strong {
       color: #c2410c;
     }
+  }
+
+  &__hero-link {
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #0f172a;
+    text-decoration: none;
+    font-weight: 900;
+    white-space: nowrap;
   }
 }

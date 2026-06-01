@@ -8,6 +8,7 @@ import { AccountsPageComponent } from './features/accounts/pages/accounts-page/a
 import { TransfersPageComponent } from './features/transfers/pages/transfers-page/transfers-page.component';
 import { OperationsPageComponent } from './features/operations/pages/operations-page/operations-page.component';
 import { AuditPageComponent } from './features/audit/pages/audit-page/audit-page.component';
+import { AppShellComponent } from './shared/components/app-shell/app-shell.component';
 
 export const routes: Routes = [
   {
@@ -16,33 +17,34 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: DashboardPageComponent,
+    component: AppShellComponent,
     canActivate: [authGuard],
-  },
-  {
-    path: 'customers',
-    component: CustomersPageComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'accounts',
-    component: AccountsPageComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'transfers',
-    component: TransfersPageComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'operations',
-    component: OperationsPageComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'audit',
-    component: AuditPageComponent,
-    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        component: DashboardPageComponent,
+      },
+      {
+        path: 'customers',
+        component: CustomersPageComponent,
+      },
+      {
+        path: 'accounts',
+        component: AccountsPageComponent,
+      },
+      {
+        path: 'transfers',
+        component: TransfersPageComponent,
+      },
+      {
+        path: 'operations',
+        component: OperationsPageComponent,
+      },
+      {
+        path: 'audit',
+        component: AuditPageComponent,
+      },
+    ],
   },
   {
     path: '**',

@@ -1,0 +1,36 @@
+<div class="app-shell">
+  <aside class="app-shell__sidebar">
+    <div class="app-shell__brand">
+      <span>Bankaool</span>
+      <strong>FinCore 360</strong>
+      <small>Operations Admin</small>
+    </div>
+
+    <nav class="app-shell__nav">
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="app-shell__nav-link--active"
+          [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+          class="app-shell__nav-link"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="app-shell__user">
+      @if (user(); as currentUser) {
+        <span>{{ currentUser.name }}</span>
+        <small>{{ currentUser.email }}</small>
+        <strong>{{ currentUser.role }}</strong>
+      }
+
+      <button type="button" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <section class="app-shell__content">
+    <router-outlet />
+  </section>
+</div>

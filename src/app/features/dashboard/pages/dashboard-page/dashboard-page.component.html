@@ -9,13 +9,9 @@
       </p>
     </div>
 
-    <div class="dashboard-page__actions">
-      @if (user(); as currentUser) {
-        <span>{{ currentUser.name }} · {{ currentUser.role }}</span>
-      }
-
-      <button type="button" (click)="logout()">Logout</button>
-    </div>
+    <a routerLink="/operations" class="dashboard-page__hero-link">
+      Review operations
+    </a>
   </section>
 
   @if (isLoading()) {

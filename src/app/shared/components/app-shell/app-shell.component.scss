@@ -1,0 +1,154 @@
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  background: #f8fafc;
+
+  &__sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 22px;
+    color: #ffffff;
+    background:
+      radial-gradient(circle at top left, rgba(96, 165, 250, 0.24), transparent 32%),
+      #0f172a;
+    overflow-y: auto;
+  }
+
+  &__brand {
+    display: grid;
+    gap: 4px;
+    padding: 18px;
+    border: 1px solid rgba(191, 219, 254, 0.18);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.06);
+
+    span {
+      color: #93c5fd;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    strong {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    small {
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+  }
+
+  &__nav {
+    display: grid;
+    gap: 8px;
+  }
+
+  &__nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+    padding: 0 14px;
+    border-radius: 16px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 900;
+
+    &:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &--active {
+      color: #0f172a;
+      background: #ffffff;
+    }
+  }
+
+  &__user {
+    margin-top: auto;
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid rgba(191, 219, 254, 0.18);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.06);
+
+    span,
+    strong,
+    small {
+      display: block;
+    }
+
+    span {
+      color: #ffffff;
+      font-weight: 900;
+    }
+
+    small {
+      color: #cbd5e1;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    strong {
+      width: fit-content;
+      margin-top: 4px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #bfdbfe;
+      background: rgba(59, 130, 246, 0.2);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    button {
+      margin-top: 10px;
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 14px;
+      color: #0f172a;
+      background: #ffffff;
+      font-weight: 900;
+    }
+  }
+
+  &__content {
+    min-width: 0;
+  }
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+
+    &__sidebar {
+      position: static;
+      height: auto;
+    }
+
+    &__nav {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    &__user {
+      margin-top: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    &__sidebar {
+      padding: 16px;
+    }
+
+    &__nav {
+      grid-template-columns: 1fr;
+    }
+  }
+}
