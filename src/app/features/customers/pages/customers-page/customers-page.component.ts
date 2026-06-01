@@ -6,6 +6,7 @@ import {
   Customer,
   CustomerKycStatus,
 } from '../../../../core/models/customer.model';
+import { OperationService } from '../../../../core/services/operation.service';
 
 @Component({
   selector: 'app-customers-page',
@@ -16,6 +17,7 @@ import {
 })
 export class CustomersPageComponent {
   private readonly customerService = inject(CustomerService);
+  private readonly operationService = inject(OperationService);
 
   customers = signal<Customer[]>([]);
   isLoading = signal(true);
@@ -82,5 +84,27 @@ export class CustomersPageComponent {
     };
 
     return labels[status];
+  }
+
+  blockCustomer(customer: Customer): void {
+    if (customer.kycStatus === 'blocked') {
+      return;
+    }
+
+    this.updatingCustomerId.set(customer.id);
+    this.errorMessage.set(null);
+
+    this.operationService.blockCustomer(customer.id).subscribe({
+      next: () => {
+        this.updatingCustomerId.set(null);
+        this.loadCustomers();
+      },
+      error: (error) => {
+        this.updatingCustomerId.set(null);
+        this.errorMessage.set(
+          error?.error?.message || 'Unable to block customer.'
+        );
+      },
+    });
   }
 }

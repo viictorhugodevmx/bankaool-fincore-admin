@@ -239,7 +239,87 @@
     &__section-head {
       flex-direction: column;
     }
+
+    &__ops {
+      align-items: flex-start;
+      flex-direction: column;
+
+      div:last-child {
+        justify-content: flex-start;
+      }
+    }
   }
+
+&__alert {
+  margin-top: 24px;
+  padding: 16px 20px;
+  border-radius: 24px;
+  font-weight: 900;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+
+  &--success {
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+  }
+}
+
+  &__ops {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding: 18px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+
+    strong,
+    small {
+      display: block;
+    }
+
+    strong {
+      color: #0f172a;
+      font-size: 16px;
+    }
+
+    small {
+      margin-top: 4px;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    div:last-child {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 14px;
+      color: #ffffff;
+      font-weight: 900;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+    }
+  }
+
+  &__block {
+    background: #dc2626;
+  }
+
+  &__unblock {
+    background: #16a34a;
+  }
+
+
 }
 
 .account-card {

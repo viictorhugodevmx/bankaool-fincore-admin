@@ -8,6 +8,7 @@ import {
   MovementType,
 } from '../../../../core/models/account.model';
 import { AccountService } from '../../../../core/services/account.service';
+import { OperationService } from '../../../../core/services/operation.service';
 
 @Component({
   selector: 'app-accounts-page',
@@ -18,6 +19,7 @@ import { AccountService } from '../../../../core/services/account.service';
 })
 export class AccountsPageComponent {
   private readonly accountService = inject(AccountService);
+  private readonly operationService = inject(OperationService);
 
   accounts = signal<Account[]>([]);
   movements = signal<AccountMovement[]>([]);
@@ -33,6 +35,9 @@ export class AccountsPageComponent {
 
     return this.accounts().find((account) => account.id === accountId) ?? null;
   });
+
+  actionAccountId = signal<string | null>(null);
+  successMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadAccounts();
@@ -125,4 +130,51 @@ export class AccountsPageComponent {
   isMoneyIn(type: MovementType): boolean {
     return type === 'deposit' || type === 'transfer_in' || type === 'reversal';
   }
+
+  blockAccount(account: Account): void {
+    if (account.status === 'blocked') {
+      return;
+    }
+
+    this.actionAccountId.set(account.id);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    this.operationService.blockAccount(account.id).subscribe({
+      next: () => {
+        this.successMessage.set('Account blocked successfully.');
+        this.actionAccountId.set(null);
+        this.loadAccounts();
+      },
+      error: (error) => {
+        this.errorMessage.set(error?.error?.message || 'Unable to block account.');
+        this.actionAccountId.set(null);
+      },
+    });
+  }
+
+  unblockAccount(account: Account): void {
+    if (account.status === 'active') {
+      return;
+    }
+
+    this.actionAccountId.set(account.id);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    this.operationService.unblockAccount(account.id).subscribe({
+      next: () => {
+        this.successMessage.set('Account unblocked successfully.');
+        this.actionAccountId.set(null);
+        this.loadAccounts();
+      },
+      error: (error) => {
+        this.errorMessage.set(
+          error?.error?.message || 'Unable to unblock account.'
+        );
+        this.actionAccountId.set(null);
+      },
+    });
+  }
+
 }

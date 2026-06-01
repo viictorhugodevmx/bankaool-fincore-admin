@@ -12,6 +12,12 @@
     <button type="button" (click)="loadAccounts()">Refresh</button>
   </section>
 
+  @if (successMessage()) {
+    <section class="accounts-page__alert accounts-page__alert--success">
+      {{ successMessage() }}
+    </section>
+  }
+
   @if (isLoading()) {
     <section class="accounts-page__state">
       <strong>Loading accounts...</strong>
@@ -77,6 +83,33 @@
               <span>Monthly limit</span>
               <strong>{{ formatMoney(account.monthlyLimit, account.currency) }}</strong>
             </article>
+          </div>
+
+          <div class="accounts-page__ops">
+            <div>
+              <strong>Operational controls</strong>
+              <small>Block or unblock this account from operations.</small>
+            </div>
+
+            <div>
+              <button
+                type="button"
+                class="accounts-page__block"
+                (click)="blockAccount(account)"
+                [disabled]="actionAccountId() === account.id || account.status === 'blocked'"
+              >
+                {{ actionAccountId() === account.id ? 'Processing...' : 'Block account' }}
+              </button>
+
+              <button
+                type="button"
+                class="accounts-page__unblock"
+                (click)="unblockAccount(account)"
+                [disabled]="actionAccountId() === account.id || account.status === 'active'"
+              >
+                {{ actionAccountId() === account.id ? 'Processing...' : 'Unblock account' }}
+              </button>
+            </div>
           </div>
 
           <div class="accounts-page__movements-card">
