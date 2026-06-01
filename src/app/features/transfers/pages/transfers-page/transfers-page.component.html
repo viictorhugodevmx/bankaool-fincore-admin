@@ -1,4 +1,177 @@
-<main class="placeholder-page">
-  <h1>Transfers</h1>
-  <p>Transfer management page placeholder.</p>
+<main class="transfers-page">
+  <section class="transfers-page__header">
+    <div>
+      <a routerLink="/" class="transfers-page__back">← Dashboard</a>
+      <span>Bankaool FinCore 360</span>
+      <h1>Internal Transfers</h1>
+      <p>
+        Create internal account transfers and observe how the risk engine routes
+        suspicious operations to pending review.
+      </p>
+    </div>
+
+    <button type="button" (click)="loadAccounts()">Refresh accounts</button>
+  </section>
+
+  @if (isLoadingAccounts()) {
+    <section class="transfers-page__state">
+      <strong>Loading accounts...</strong>
+      <p>Preparing transfer form.</p>
+    </section>
+  } @else {
+    <section class="transfers-page__layout">
+      <form class="transfer-form" (ngSubmit)="submitTransfer()">
+        <div class="transfer-form__head">
+          <strong>Create transfer</strong>
+          <small>Admin/operator protected action</small>
+        </div>
+
+        <label>
+          From account
+          <select name="fromAccountId" [(ngModel)]="fromAccountId">
+            @for (account of accounts(); track account.id) {
+              <option [value]="account.id">
+                {{ account.accountNumber }} · {{ formatMoney(account.balance, account.currency) }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label>
+          To account
+          <select name="toAccountId" [(ngModel)]="toAccountId">
+            @for (account of accounts(); track account.id) {
+              <option [value]="account.id">
+                {{ account.accountNumber }} · {{ account.status }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <div class="transfer-form__accounts">
+          <article>
+            <span>Origin balance</span>
+            <strong>
+              @if (fromAccount(); as account) {
+                {{ formatMoney(account.balance, account.currency) }}
+              } @else {
+                —
+              }
+            </strong>
+          </article>
+
+          <article>
+            <span>Destination</span>
+            <strong>
+              @if (toAccount(); as account) {
+                {{ account.accountNumber }}
+              } @else {
+                —
+              }
+            </strong>
+          </article>
+        </div>
+
+        <label>
+          Amount
+          <input
+            type="number"
+            name="amount"
+            min="1"
+            [(ngModel)]="amount"
+            placeholder="5000"
+          />
+        </label>
+
+        <label>
+          Description
+          <input
+            type="text"
+            name="description"
+            [(ngModel)]="description"
+            placeholder="Internal transfer test"
+          />
+        </label>
+
+        <div class="transfer-form__presets">
+          <button type="button" (click)="useNormalPreset()">Normal preset</button>
+          <button type="button" (click)="useRiskPreset()">Risk preset</button>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="transfer-form__alert transfer-form__alert--error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        @if (successMessage()) {
+          <div class="transfer-form__alert transfer-form__alert--success">
+            {{ successMessage() }}
+          </div>
+        }
+
+        <button class="transfer-form__submit" type="submit" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Creating transfer...' : 'Create transfer' }}
+        </button>
+      </form>
+
+      <section class="transfers-panel">
+        <div class="transfers-panel__head">
+          <strong>Created in this session</strong>
+          <small>{{ createdTransfers().length }} transfer records</small>
+        </div>
+
+        @if (createdTransfers().length === 0) {
+          <div class="transfers-panel__empty">
+            No transfers created from this screen yet.
+          </div>
+        } @else {
+          <div class="transfers-panel__list">
+            @for (transfer of createdTransfers(); track transfer.id) {
+              <article class="transfer-card">
+                <div>
+                  <span
+                    class="status"
+                    [class]="'status status--' + transfer.status"
+                  >
+                    {{ formatStatus(transfer.status) }}
+                  </span>
+
+                  <strong>{{ formatMoney(transfer.amount) }}</strong>
+                  <small>{{ transfer.reference }}</small>
+                </div>
+
+                <p>{{ transfer.description }}</p>
+
+                <dl>
+                  <div>
+                    <dt>From</dt>
+                    <dd>{{ accountLabel(transfer.fromAccountId) }}</dd>
+                  </div>
+
+                  <div>
+                    <dt>To</dt>
+                    <dd>{{ accountLabel(transfer.toAccountId) }}</dd>
+                  </div>
+
+                  <div>
+                    <dt>Risk score</dt>
+                    <dd>{{ transfer.riskScore }}</dd>
+                  </div>
+                </dl>
+
+                @if (transfer.riskReasons.length) {
+                  <ul>
+                    @for (reason of transfer.riskReasons; track reason) {
+                      <li>{{ reason }}</li>
+                    }
+                  </ul>
+                }
+              </article>
+            }
+          </div>
+        }
+      </section>
+    </section>
+  }
 </main>
