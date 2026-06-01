@@ -1,4 +1,160 @@
-<main class="placeholder-page">
-  <h1>Accounts</h1>
-  <p>Account management page placeholder.</p>
+<main class="accounts-page">
+  <section class="accounts-page__header">
+    <div>
+      <a routerLink="/" class="accounts-page__back">← Dashboard</a>
+      <span>Bankaool FinCore 360</span>
+      <h1>Digital Accounts</h1>
+      <p>
+        Monitor customer accounts, balances, limits and account movement history.
+      </p>
+    </div>
+
+    <button type="button" (click)="loadAccounts()">Refresh</button>
+  </section>
+
+  @if (isLoading()) {
+    <section class="accounts-page__state">
+      <strong>Loading accounts...</strong>
+      <p>Getting digital account data from the API.</p>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="accounts-page__state accounts-page__state--error">
+      <strong>Accounts unavailable</strong>
+      <p>{{ errorMessage() }}</p>
+      <button type="button" (click)="loadAccounts()">Try again</button>
+    </section>
+  } @else {
+    <section class="accounts-page__layout">
+      <aside class="accounts-page__accounts">
+        <div class="accounts-page__section-head">
+          <strong>{{ accounts().length }} accounts</strong>
+          <small>Select one to review movements</small>
+        </div>
+
+        <div class="accounts-page__account-list">
+          @for (account of accounts(); track account.id) {
+            <button
+              type="button"
+              class="account-card"
+              [class.account-card--active]="selectedAccountId() === account.id"
+              (click)="selectAccount(account.id)"
+            >
+              <span>{{ account.accountNumber }}</span>
+              <strong>{{ formatMoney(account.balance, account.currency) }}</strong>
+
+              <div>
+                <small>{{ account.currency }}</small>
+                <small class="status" [class]="'status status--' + account.status">
+                  {{ formatStatus(account.status) }}
+                </small>
+              </div>
+            </button>
+          } @empty {
+            <div class="accounts-page__empty">No accounts found.</div>
+          }
+        </div>
+      </aside>
+
+      <section class="accounts-page__detail">
+        @if (selectedAccount(); as account) {
+          <div class="accounts-page__summary">
+            <article>
+              <span>Account number</span>
+              <strong>{{ account.accountNumber }}</strong>
+            </article>
+
+            <article>
+              <span>Balance</span>
+              <strong>{{ formatMoney(account.balance, account.currency) }}</strong>
+            </article>
+
+            <article>
+              <span>Daily limit</span>
+              <strong>{{ formatMoney(account.dailyLimit, account.currency) }}</strong>
+            </article>
+
+            <article>
+              <span>Monthly limit</span>
+              <strong>{{ formatMoney(account.monthlyLimit, account.currency) }}</strong>
+            </article>
+          </div>
+
+          <div class="accounts-page__movements-card">
+            <div class="accounts-page__section-head">
+              <strong>Movements</strong>
+              <small>{{ movements().length }} records</small>
+            </div>
+
+            @if (isLoadingMovements()) {
+              <div class="accounts-page__state accounts-page__state--inner">
+                <strong>Loading movements...</strong>
+                <p>Getting account history.</p>
+              </div>
+            } @else if (movementsErrorMessage()) {
+              <div class="accounts-page__state accounts-page__state--inner accounts-page__state--error">
+                <strong>Movements unavailable</strong>
+                <p>{{ movementsErrorMessage() }}</p>
+              </div>
+            } @else {
+              <div class="accounts-page__table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th>Reference</th>
+                      <th>Amount</th>
+                      <th>Balance after</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (movement of movements(); track movement.id) {
+                      <tr>
+                        <td>
+                          <span
+                            class="movement-type"
+                            [class.movement-type--in]="isMoneyIn(movement.type)"
+                            [class.movement-type--out]="!isMoneyIn(movement.type)"
+                          >
+                            {{ formatMovementType(movement.type) }}
+                          </span>
+                        </td>
+
+                        <td>{{ movement.description }}</td>
+                        <td>{{ movement.reference }}</td>
+
+                        <td
+                          [class.amount-in]="isMoneyIn(movement.type)"
+                          [class.amount-out]="!isMoneyIn(movement.type)"
+                        >
+                          {{ isMoneyIn(movement.type) ? '+' : '-' }}
+                          {{ formatMoney(movement.amount, account.currency) }}
+                        </td>
+
+                        <td>{{ formatMoney(movement.balanceAfter, account.currency) }}</td>
+                        <td>{{ formatDate(movement.createdAt) }}</td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="6">
+                          <div class="accounts-page__empty">No movements found.</div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="accounts-page__state">
+            <strong>No account selected</strong>
+            <p>Select an account to review details.</p>
+          </div>
+        }
+      </section>
+    </section>
+  }
 </main>
