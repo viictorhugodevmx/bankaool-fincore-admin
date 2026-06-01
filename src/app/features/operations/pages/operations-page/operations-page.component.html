@@ -1,4 +1,119 @@
-<main class="placeholder-page">
-  <h1>Operations </h1>
-  <p>Operation management page placeholder.</p>
+<main class="operations-page">
+  <section class="operations-page__header">
+    <div>
+      <a routerLink="/" class="operations-page__back">← Dashboard</a>
+      <span>Bankaool FinCore 360</span>
+      <h1>Operations Review</h1>
+      <p>
+        Review suspicious transfers flagged by the risk engine and decide whether
+        to approve or reject them.
+      </p>
+    </div>
+
+    <button type="button" (click)="loadPendingTransfers()">Refresh queue</button>
+  </section>
+
+  @if (successMessage()) {
+    <section class="operations-page__alert operations-page__alert--success">
+      {{ successMessage() }}
+    </section>
+  }
+
+  @if (errorMessage()) {
+    <section class="operations-page__alert operations-page__alert--error">
+      {{ errorMessage() }}
+    </section>
+  }
+
+  @if (isLoading()) {
+    <section class="operations-page__state">
+      <strong>Loading pending review queue...</strong>
+      <p>Getting flagged transfers from the API.</p>
+    </section>
+  } @else {
+    <section class="operations-page__queue">
+      <div class="operations-page__queue-head">
+        <strong>{{ pendingTransfers().length }} pending transfers</strong>
+        <small>Risk engine review queue</small>
+      </div>
+
+      @if (pendingTransfers().length === 0) {
+        <div class="operations-page__empty">
+          No pending review transfers. Create a risk transfer from the Transfers
+          page to test this flow.
+        </div>
+      } @else {
+        <div class="operations-page__list">
+          @for (transfer of pendingTransfers(); track transfer.id) {
+            <article class="review-card">
+              <div class="review-card__top">
+                <span class="status status--pending_review">
+                  {{ formatStatus(transfer.status) }}
+                </span>
+
+                <strong>{{ formatMoney(transfer.amount) }}</strong>
+                <small>{{ transfer.reference }}</small>
+              </div>
+
+              <p>{{ transfer.description }}</p>
+
+              <div class="review-card__grid">
+                <article>
+                  <span>Risk score</span>
+                  <strong>{{ transfer.riskScore }}</strong>
+                </article>
+
+                <article>
+                  <span>From account</span>
+                  <strong>{{ transfer.fromAccountId }}</strong>
+                </article>
+
+                <article>
+                  <span>To account</span>
+                  <strong>{{ transfer.toAccountId }}</strong>
+                </article>
+
+                <article>
+                  <span>Created</span>
+                  <strong>{{ formatDate(transfer.createdAt) }}</strong>
+                </article>
+              </div>
+
+              @if (transfer.riskReasons.length) {
+                <div class="review-card__reasons">
+                  <span>Risk reasons</span>
+
+                  <ul>
+                    @for (reason of transfer.riskReasons; track reason) {
+                      <li>{{ reason }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              <div class="review-card__actions">
+                <button
+                  type="button"
+                  class="review-card__approve"
+                  (click)="approveTransfer(transfer)"
+                  [disabled]="actionTransferId() === transfer.id"
+                >
+                  {{ actionTransferId() === transfer.id ? 'Processing...' : 'Approve' }}
+                </button>
+
+                <button
+                  type="button"
+                  class="review-card__reject"
+                  (click)="rejectTransfer(transfer)"
+                  [disabled]="actionTransferId() === transfer.id"
+                >
+                  {{ actionTransferId() === transfer.id ? 'Processing...' : 'Reject' }}
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
 </main>
